@@ -42,25 +42,25 @@ dockerBuild() {
     docker save -o $IMAGE.tar $DOCKER_REGISTRY/$IMAGE:dev
 
     if [ "$mode" == "mnode" ]; then
-        scp $IMAGE.tar node2:~/
-        scp $IMAGE.tar node3:~/
+        scp $IMAGE.tar cloud-node:~/
+        scp $IMAGE.tar edge-node:~/
     fi
 
     sudo crictl rmi docker.io/$DOCKER_REGISTRY/$IMAGE:dev
     sudo ctr -n=k8s.io images import $IMAGE.tar
     if [ "$mode" == "mnode" ]; then
-        ssh node2 "crictl rmi docker.io/$DOCKER_REGISTRY/$IMAGE:dev"
-        ssh node2 "ctr -n=k8s.io images import $IMAGE.tar"
-        ssh node3 "crictl rmi docker.io/$DOCKER_REGISTRY/$IMAGE:dev"
-        ssh node3 "ctr -n=k8s.io images import $IMAGE.tar"
+        ssh cloud-node "crictl rmi docker.io/$DOCKER_REGISTRY/$IMAGE:dev"
+        ssh cloud-node "ctr -n=k8s.io images import $IMAGE.tar"
+        ssh edge-node "crictl rmi docker.io/$DOCKER_REGISTRY/$IMAGE:dev"
+        ssh edge-node "ctr -n=k8s.io images import $IMAGE.tar"
     fi
 
     logStage "Clean up"
     rm -rf ./$IMAGE
     rm -rf $IMAGE.tar
     if [ "$mode" == "mnode" ]; then
-        ssh node2 "rm -rf $IMAGE.tar"
-        ssh node3 "rm -rf $IMAGE.tar"
+        ssh cloud-node "rm -rf $IMAGE.tar"
+        ssh edge-node "rm -rf $IMAGE.tar"
     fi
 }
 
