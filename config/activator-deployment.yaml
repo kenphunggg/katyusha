@@ -31,9 +31,9 @@ spec:
               - key: kubernetes.io/hostname
                 operator: In
                 values:
-                - node1
-                - node2
-                - node3
+                - master-node
+                - cloud-node
+                - edge-node
       containers:
         - name: activator
           # This is the Go import path for the binary that is containerized
